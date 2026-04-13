@@ -5,10 +5,13 @@ import numpy as np
 from kronos.features.technical import compute_sma, compute_ema, compute_rsi, compute_macd, compute_bollinger_bands
 
 
-def signal_sma_crossover(prices: pd.Series, short_window: int = 10, long_window: int = 30) -> pd.Series:
+def signal_sma_crossover(prices: pd.Series, short_window: int = 10, long_window: int = 50) -> pd.Series:
     """Generate buy/sell signals from SMA crossover.
 
     Returns +1 (buy), -1 (sell), or 0 (hold).
+
+    Note: changed long_window default from 30 to 50, which is a more commonly
+    used value in practice (e.g. 10/50 SMA crossover).
     """
     short_sma = compute_sma(prices, short_window)
     long_sma = compute_sma(prices, long_window)
