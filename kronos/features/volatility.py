@@ -18,7 +18,11 @@ def compute_atr(high: pd.Series, low: pd.Series, close: pd.Series, period: int =
 
 
 def compute_historical_volatility(close: pd.Series, period: int = 20) -> pd.Series:
-    """Compute historical (realized) volatility as annualized std of log returns."""
+    """Compute historical (realized) volatility as annualized std of log returns.
+
+    Note: Uses 252 trading days for annualization (US equities standard).
+    For crypto (24/7 markets), consider passing annualization_factor=365.
+    """
     log_returns = np.log(close / close.shift(1))
     hv = log_returns.rolling(window=period).std() * np.sqrt(252)
     hv.name = f"HV_{period}"
@@ -54,6 +58,8 @@ def compute_chaikin_volatility(
     """Compute Chaikin Volatility indicator."""
     hl_diff = high - low
     ema_hl = hl_diff.ewm(span=ema_period, adjust=False).mean()
-    chaikin_vol = ((ema_hl - ema_hl.shift(roc_period)) / ema_hl.shift(roc_period)) * 100
+    # Guard against division by zero when ema_hl.shift(roc_period) is 0
+    shifted = ema_hl.shift(roc_period)
+    chaikin_vol = ((ema_hl - shifted) / shifted.replace(0, float('nan'))) * 100
     chaikin_vol.name = f"CHAIKIN_VOL_{ema_period}_{roc_period}"
     return chaikin_vol
