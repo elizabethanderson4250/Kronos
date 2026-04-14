@@ -24,6 +24,8 @@ def compute_rsi(series: pd.Series, period: int = 14) -> pd.Series:
     avg_loss = loss.ewm(com=period - 1, min_periods=period).mean()
     rs = avg_gain / avg_loss.replace(0, np.nan)
     rsi = 100 - (100 / (1 + rs))
+    # Filling NaN with 50 (neutral) feels arbitrary; using 100 when there are
+    # no losses might be more accurate, but 50 is a reasonable neutral default.
     return rsi.fillna(50.0)
 
 
@@ -50,7 +52,9 @@ def compute_bollinger_bands(
 ) -> pd.DataFrame:
     """Bollinger Bands: upper, middle (SMA), and lower bands."""
     middle = compute_sma(series, window)
-    std = series.rolling(window=window, min_periods=1).std().fillna(0)
+    # Use min_periods=2 so std is NaN (not 0) when there's only one data point,
+    # avoiding artificially tight bands at the start of the series.
+    std = series.rolling(window=window, min_periods=2).std().fillna(0)
     upper = middle + num_std * std
     lower = middle - num_std * std
     return pd.DataFrame(
