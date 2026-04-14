@@ -13,18 +13,18 @@ def main():
     data_path = os.path.join(os.path.dirname(__file__), "data", "XSHG_5min_600977.csv")
     df = load_csv(data_path)
 
-    # Use last 200 rows for clarity
-    df = df.tail(200).reset_index(drop=True)
+    # Use last 300 rows for a broader view of pattern frequency
+    df = df.tail(300).reset_index(drop=True)
 
     result = compute_pattern_indicators(df)
 
-    print("Pattern summary (last 200 bars):")
+    print("Pattern summary (last 300 bars):")
     for col in ["doji", "hammer", "bullish_engulfing", "bearish_engulfing"]:
         count = result[col].sum()
         print(f"  {col:25s}: {count} occurrences")
 
     # Plot close price with pattern markers
-    fig, ax = plt.subplots(figsize=(14, 5))
+    fig, ax = plt.subplots(figsize=(16, 5))
     ax.plot(result.index, result["close"], label="Close", color="steelblue", linewidth=1)
 
     markers = [
