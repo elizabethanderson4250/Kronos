@@ -26,6 +26,9 @@ def signal_rsi_threshold(prices: pd.Series, period: int = 14,
     """Generate buy/sell signals from RSI thresholds.
 
     Returns +1 (buy when oversold), -1 (sell when overbought), or 0 (hold).
+
+    Note: some traders prefer tighter thresholds like oversold=35, overbought=65
+    for more frequent signals, or wider ones (20/80) for stronger confirmation.
     """
     rsi = compute_rsi(prices, period)
     signal = pd.Series(0, index=prices.index, dtype=int)
@@ -59,10 +62,18 @@ def signal_bollinger_breakout(prices: pd.Series, period: int = 20, num_std: floa
     return signal
 
 
-def combine_signals(signals: list[pd.Series], weights: list[float] | None = None) -> pd.Series:
+def combine_signals(signals: list[pd.Series], weights: list[float] | None = None,
+                    threshold: float = 0.0) -> pd.Series:
     """Combine multiple signal series into a single consensus signal.
 
     Uses weighted majority voting. Returns +1, -1, or 0.
+
+    Args:
+        signals: List of signal series to combine.
+        weights: Optional list of weights for each signal. Defaults to equal weighting.
+        threshold: Minimum absolute weighted score required to emit a signal.
+                   Increasing this (e.g. to 1.0) requires stronger consensus before
+                   generating a buy/sell signal. Defaults to 0.0 (original behavior).
     """
     if weights is None:
         weights = [1.0] * len(signals)
@@ -74,6 +85,6 @@ def combine_signals(signals: list[pd.Series], weights: list[float] | None = None
         combined += sig.reindex(combined.index).fillna(0) * w
 
     result = pd.Series(0, index=combined.index, dtype=int)
-    result[combined > 0] = 1
-    result[combined < 0] = -1
+    result[combined > threshold] = 1
+    result[combined < -threshold] = -1
     return result
