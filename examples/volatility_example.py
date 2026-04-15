@@ -14,7 +14,8 @@ from kronos.features.volatility import (
 DATA_PATH = "data/XSHG_5min_600977.csv"
 
 # Increase tail to see more history in the plots
-TAIL = 300
+# Personal note: 500 bars gives a better view of volatility cycles on 5-min data
+TAIL = 500
 
 
 def main():
