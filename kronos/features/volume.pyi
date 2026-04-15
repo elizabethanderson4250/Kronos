@@ -35,6 +35,10 @@ def compute_vwap(
 
     Returns:
         pd.Series: VWAP values.
+
+    Note:
+        VWAP is calculated as cumulative(typical_price * volume) / cumulative(volume),
+        where typical_price = (high + low + close) / 3.
     """
     ...
 
@@ -92,8 +96,9 @@ def compute_volume_indicators(
 
     Args:
         df: OHLCV DataFrame with columns: high, low, close, volume.
-        mfi_period: Period for MFI calculation.
-        cmf_period: Period for CMF calculation.
+        mfi_period: Period for MFI calculation (default 14).
+        cmf_period: Period for CMF calculation (default 20). Some sources
+            recommend 21 for monthly data; 20 works well for daily data.
 
     Returns:
         pd.DataFrame: DataFrame with columns OBV, VWAP, MFI, CMF.
