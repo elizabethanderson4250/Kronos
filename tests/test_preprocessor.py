@@ -36,10 +36,19 @@ def test_minmax_not_fitted_raises():
 
 
 def test_minmax_constant_series():
+    # A constant series should scale to all zeros (no range to normalize over)
     data = np.array([5.0, 5.0, 5.0])
     scaler = MinMaxScaler()
     scaled = scaler.fit_transform(data)
     np.testing.assert_array_equal(scaled, np.zeros(3))
+
+
+def test_minmax_single_element():
+    # Edge case: single-element array should behave like constant series
+    data = np.array([42.0])
+    scaler = MinMaxScaler()
+    scaled = scaler.fit_transform(data)
+    np.testing.assert_array_equal(scaled, np.zeros(1))
 
 
 def test_build_sequences_shape():
