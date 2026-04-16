@@ -61,6 +61,9 @@ def compute_mfi(
 
     Returns:
         pd.Series: MFI values in range [0, 100].
+
+    Note:
+        Common signal levels: overbought above 80, oversold below 20.
     """
     ...
 
@@ -90,15 +93,16 @@ def compute_cmf(
 def compute_volume_indicators(
     df: pd.DataFrame,
     mfi_period: int = 14,
-    cmf_period: int = 20,
+    cmf_period: int = 21,
 ) -> pd.DataFrame:
     """Compute all volume indicators and return as a DataFrame.
 
     Args:
         df: OHLCV DataFrame with columns: high, low, close, volume.
         mfi_period: Period for MFI calculation (default 14).
-        cmf_period: Period for CMF calculation (default 20). Some sources
-            recommend 21 for monthly data; 20 works well for daily data.
+        cmf_period: Period for CMF calculation (default 21). Using 21 here
+            to better align with monthly trading days; override with 20 for
+            shorter lookback on daily data.
 
     Returns:
         pd.DataFrame: DataFrame with columns OBV, VWAP, MFI, CMF.
