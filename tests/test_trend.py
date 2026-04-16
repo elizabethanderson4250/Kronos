@@ -107,3 +107,13 @@ def test_cci_has_variance(ohlc):
     high, low, close = ohlc
     result = compute_cci(high, low, close)
     assert result.dropna().std() > 0
+
+
+# Personal note: added a sanity check to ensure CCI non-NaN count matches
+# expected number of valid rows given the default period of 20.
+def test_cci_valid_count(ohlc):
+    high, low, close = ohlc
+    period = 20
+    result = compute_cci(high, low, close, period=period)
+    expected_valid = len(close) - (period - 1)
+    assert result.notna().sum() == expected_valid
