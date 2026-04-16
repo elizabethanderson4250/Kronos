@@ -97,3 +97,13 @@ def test_cci_is_series(ohlc):
     high, low, close = ohlc
     result = compute_cci(high, low, close)
     assert isinstance(result, pd.Series)
+
+
+# Note: CCI values beyond +/-100 indicate overbought/oversold conditions.
+# This test checks that the non-NaN portion of the output actually varies
+# (i.e. the function isn't returning a constant), which would be a sign of
+# a broken implementation.
+def test_cci_has_variance(ohlc):
+    high, low, close = ohlc
+    result = compute_cci(high, low, close)
+    assert result.dropna().std() > 0
