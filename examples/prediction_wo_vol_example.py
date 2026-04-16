@@ -23,6 +23,7 @@ def plot_prediction(kline_df, pred_df):
     ax.grid(True)
 
     plt.tight_layout()
+    plt.savefig("prediction_result.png", dpi=150)  # save figure to disk instead of just showing
     plt.show()
 
 
@@ -45,6 +46,7 @@ x_timestamp = df.loc[:lookback-1, 'timestamps']
 y_timestamp = df.loc[lookback:lookback+pred_len-1, 'timestamps']
 
 # 4. Make Prediction
+# increased sample_count to 20 for better averaged predictions
 pred_df = predictor.predict(
     df=x_df,
     x_timestamp=x_timestamp,
@@ -52,7 +54,7 @@ pred_df = predictor.predict(
     pred_len=pred_len,
     T=1.0,
     top_p=0.9,
-    sample_count=1,
+    sample_count=20,
     verbose=True
 )
 
@@ -65,4 +67,3 @@ kline_df = df.loc[:lookback+pred_len-1]
 
 # visualize
 plot_prediction(kline_df, pred_df)
-
