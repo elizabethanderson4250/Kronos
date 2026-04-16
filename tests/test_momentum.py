@@ -106,3 +106,12 @@ def test_williams_r_name(ohlc):
     high, low, close = ohlc
     wr = compute_williams_r(high, low, close, period=14)
     assert wr.name == "WILLR_14"
+
+
+# --- Williams %R first values NaN ---
+# Note: first (period - 1) values should be NaN since there isn't enough history
+def test_williams_r_first_values_nan(ohlc):
+    high, low, close = ohlc
+    period = 14
+    wr = compute_williams_r(high, low, close, period=period)
+    assert wr.iloc[:period - 1].isna().all()
