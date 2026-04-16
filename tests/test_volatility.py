@@ -40,6 +40,15 @@ def test_atr_name(ohlc):
     assert atr.name == "ATR_14"
 
 
+def test_atr_short_period(ohlc):
+    # Using a shorter period to check ATR still works and remains positive
+    high, low, close = ohlc
+    atr = compute_atr(high, low, close, period=5)
+    assert len(atr) == len(close)
+    assert (atr.dropna() > 0).all()
+    assert atr.name == "ATR_5"
+
+
 def test_historical_volatility_length(ohlc):
     _, _, close = ohlc
     hv = compute_historical_volatility(close, period=20)
